@@ -1,0 +1,1 @@
+import instance from '../app/app';import db from './db';instance.startServer();db.query('SELECT * FROM persons').then(event =>{console.log(event)});
