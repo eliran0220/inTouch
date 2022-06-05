@@ -10,8 +10,4 @@ const db = new Pool({
     ssl: { rejectUnauthorized: false }
 });
 
-
-
 export default db;
-
-

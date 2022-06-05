@@ -1,0 +1,1 @@
+import instance from '../src/app/app';instance.startServer();

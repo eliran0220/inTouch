@@ -1,0 +1,1 @@
+export const username_regex = "^[A-Za-z][A-Za-z0-9_]{7,29}$";
