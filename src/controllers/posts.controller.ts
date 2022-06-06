@@ -5,9 +5,9 @@ class PostsController {
         console.log('Created instance of PostController')
     }
 
-    getPosts(req: Request, res: Response) {
+    getPost(req: Request, res: Response) {
+        console.log(req.operation_id)
         res.json({message:'Post route get request'})
-        console.log(typeof PostsController);
     }
 
     createPost(req: Request, res: Response) {

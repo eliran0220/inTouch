@@ -4,6 +4,7 @@ import dotenv  from 'dotenv';
 import * as utilities from '../utilities/common.utils';
 import * as process from "process";
 import {addIDToRequest} from '../middlewares/operationId.middleware';
+import {routeBuilder} from '../utilities/common.utils';
 class App {
     private readonly app : Express;
     constructor() {
@@ -22,10 +23,7 @@ class App {
     
     initRoutes() : void {
         for (const route of utilities.routes) {
-            const {method, url, action, controller} = route;
-            console.log(route)
-            const Controller = utilities.controllersMapping[controller];
-            this.app.route(url)[method](Controller[action]);
+            routeBuilder(this.app,route);
         }
     }
 

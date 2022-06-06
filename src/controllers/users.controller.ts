@@ -6,9 +6,8 @@ class UserController {
         console.log('Created instance of CommonController')
     }
 
-    async getUsers(req: Request, res: Response) {
+    async getUser(req: Request, res: Response) {
         res.json({message:'User route get request'})
-        console.log(typeof UserController);
     }
 
    async createUser(req: Request, res: Response) {
@@ -22,6 +21,10 @@ class UserController {
 
     async deleteUser(req: Request, res: Response) {
         res.json({message:'User route delete request'})
+    }
+
+    async login(req: Request, res: Response) {
+        res.json({message:'User route login request'})
     }
 }
 

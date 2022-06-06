@@ -1,9 +1,11 @@
 import { NextFunction, Request, Response } from 'express';
-import pkg from 'uuid';
-const { v4: uuidv4 } = pkg;
+import {v4} from 'uuid';
 
 export const addIDToRequest = (req: Request, res: Response, next: NextFunction): void => {
-    req.operation_id = uuidv4();
+    const uuId = v4()
+    req.operation_id = uuId;
     next();
 }
+
+
 

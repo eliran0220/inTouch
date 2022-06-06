@@ -1,4 +1,9 @@
 import db from '../utilities/db.utilities';
-export const createUser = async () =>{
-    
+import {IUserDb} from '../types/db.types';
+export const createUser = async (user : IUserDb) =>{
+    try {
+        console.log("hik");
+    } catch (err) {
+        throw err
+    }
 }

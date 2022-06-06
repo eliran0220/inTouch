@@ -1,1 +1,1 @@
-import instance from '../src/app/app';instance.startServer();
+import instance from './app/app'instance.startServer();
