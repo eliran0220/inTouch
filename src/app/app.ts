@@ -5,20 +5,26 @@ import * as utilities from '../utilities/common.utils';
 import * as process from "process";
 import {addIDToRequest} from '../middlewares/operationId.middleware';
 import {routeBuilder} from '../utilities/common.utils';
+import * as exceptionMiddlewares from '../middlewares/error.middlewares';
 class App {
     private readonly app : Express;
     constructor() {
+        dotenv.config({path:'./.env'});
         this.app = express();
         this.initMiddlewares();
         this.initRoutes();
-        dotenv.config({path:'./.env'});
-        console.log(process.env.APP_PORT)
+        this.initExceptionHandlers();
     }
 
     initMiddlewares() : void {
         this.app.use(cors());
         this.app.use(express.json());
         this.app.use(addIDToRequest);
+    }
+
+    initExceptionHandlers() : void {
+        this.app.use(exceptionMiddlewares.UriError);
+        this.app.use(exceptionMiddlewares.ErrorResponse);
     }
     
     initRoutes() : void {
