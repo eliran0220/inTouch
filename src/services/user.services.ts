@@ -6,6 +6,7 @@ import * as db_service from './db.user.services';
 import * as DbUserSqlService from '../services/db.user.services'
 import moment from 'moment';
 import { DbException } from '../exceptions/db.exception';
+import { NotFoundException } from '../exceptions/not-found.exceptions';
 class UserService {
     async createUser(user : IUser) {
         const new_user : IUserDb = {
@@ -21,7 +22,7 @@ class UserService {
     async getUser(user_email : string) {
         const created_user :IUserDto = await db_service.getUser(user_email);
         if (created_user) return created_user;
-        throw new
+        throw new NotFoundException('User was not found!',500);
     }
 }
 

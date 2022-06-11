@@ -1,7 +1,7 @@
 import {Request,Response,NextFunction} from 'express';
 import {HttpException} from '../exceptions/http.exception';
 import { IErrorResponse } from '../types/response.types';
-import {UriNotFound} from '../exceptions/url.exceptions';
+import {NotFoundException} from '../exceptions/not-found.exceptions';
 
 export const ErrorResponse = (err: HttpException, req: Request, res: Response, next: NextFunction) : void => {
     const bad_response: IErrorResponse = {
@@ -13,7 +13,7 @@ export const ErrorResponse = (err: HttpException, req: Request, res: Response, n
     res.status(bad_response.status).json(bad_response);
 }
 
-export const UriError = (req: Request, res: Response, next: NextFunction): void => {
+export const NotFoundError = (req: Request, res: Response, next: NextFunction): void => {
     console.log(`url: ${req.url} not found...`);
-    next(new UriNotFound(req.url));
+    next(new NotFoundException(req.url));
 }

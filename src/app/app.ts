@@ -17,13 +17,13 @@ class App {
     }
 
     initMiddlewares() : void {
-        this.app.use(cors());
+        this.app.use(cors({origin: '*'}));
         this.app.use(express.json());
         this.app.use(addIDToRequest);
     }
 
     initExceptionHandlers() : void {
-        this.app.use(exceptionMiddlewares.UriError);
+        this.app.use(exceptionMiddlewares.NotFoundError);
         this.app.use(exceptionMiddlewares.ErrorResponse);
     }
     

@@ -9,14 +9,14 @@ export const createUser = async (user : IUserDb) : Promise<IUserDto> => {
         const result = (await db.query(sql_query,[...params])).rows[0] as IUserDto;
         return result;
     } catch (err) {
-        throw err;
+        throw new DbException("Database error occured",500);
     }
 }
 
-export const getUser = async (user_id : string) : Promise<IUserDto> => {
+export const getUser = async (email : string) : Promise<IUserDto> => {
     try {
-        let param = [user_id];
-        const sql_query = `SELECT * FROM users WHERE user_id = $1`;
+        let param = [email];
+        const sql_query = `SELECT * FROM users WHERE email = $1`;
         const result = (await db.query(sql_query,param)).rows[0] as IUserDto;
         return result;
     } catch (err) {
