@@ -6,6 +6,8 @@ import PostsController from '../controllers/posts.controller';
 import * as utilities from '../utilities/common.utils';
 import { IResponse, ISuccessResponse } from '../types/response.types';
 import AsyncReqHandler from '../types/catcher.types';
+import bcrypt from 'bcrypt';
+import {GEN_SALT} from '../utilities/constants.utilities';
 export const routes = [...user_routes,...posts_routes];
 
 export const controllersMapping = {
@@ -29,6 +31,17 @@ export default function errorWrapper(routingFunc: AsyncReqHandler | RequestHandl
             next(err);
         }
     };
+}
+
+export const hashUserPassword = async (password : string) => {
+    let hashed_password : string = '';
+    try{
+        const salt = await bcrypt.genSalt(GEN_SALT);
+        hashed_password = await bcrypt.hash(password,salt);
+    } catch (err) {
+        throw err;
+    }
+    return hashed_password;
 }
 
                                 

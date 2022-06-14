@@ -8,7 +8,8 @@ class UserController {
     }
 
     async getUser(req: Request, res: Response) {
-        const user = await UserService.getUser(req.params.id);
+        const id = req.params.id;
+        const user = await UserService.getUser(id);
         const response : ISuccessResponse = {
             status:200,
             message : 'User has been retrieved succesfully!',
