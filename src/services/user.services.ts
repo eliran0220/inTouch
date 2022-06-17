@@ -2,37 +2,69 @@ import {IUser} from '../types/request.types';
 import {IUserDto} from '../types/dto.types'
 import {IUserDb} from '../types/db.types';
 import {v4} from 'uuid';
+import * as process from 'process'
 import * as db_service from './db.user.services';
 import * as DbUserSqlService from '../services/db.user.services'
 import moment from 'moment';
 import { DbException } from '../exceptions/db.exception';
 import { NotFoundException } from '../exceptions/not-found.exceptions';
-import {validateEmail, validateUser} from '../validator/user.validator';
+import {validateEmail, validateUser,validatePassword} from '../validator/user.validator';
 import { ErrorAcumalator } from '../types/common.types';
 import { ValidationException } from '../exceptions/validation.exception';
-import {ResouceNotFoundMapper, StatusCodes,ValidationErrors} from '../utilities/constants.utilities';
-import { hashUserPassword } from '../utilities/common.utils';
-
+import {STATUS_CODES,VALDIATION_ERRORS,BAD_REQUEST_ERRORS} from '../utilities/constants.utilities';
+import { hashUserPassword, generateJwt } from '../utilities/common.utils';
+import { GeneralException } from '../exceptions/general.exceptions';
+import {VerifyOptions,verify} from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
 class UserService {
     async createUser(user : IUser) {
-        const errors = validateUser(user);
-        if (Object.keys(errors).length > 0) throw new ValidationException(errors,StatusCodes.BAD_REQUEST);
+        validateUser(user);
+        const user_in_db = await db_service.getUser(user.email);
+        if (user_in_db) throw new GeneralException((`User ${user.email}${BAD_REQUEST_ERRORS.USER_FOUND}`),STATUS_CODES.BAD_REQUEST);
         user.password = await hashUserPassword(user.password);
+        const token = generateJwt(user.email,user.password)
+        if (!token) throw new GeneralException(BAD_REQUEST_ERRORS.TOKEN_ERROR,STATUS_CODES.BAD_REQUEST);
         const new_user : IUserDb = {
             user_id : v4(),
             ...user,
             created_at : moment().format("DD/MM/YYYY"),
-            is_deleted : 0
+            token,
+            is_deleted : 0,
         };
         const created_user = await db_service.createUser(new_user);
+        created_user
         return created_user;
-    } 
+    }
     
-    async getUser(user_email : string) {
-        if (!validateEmail(user_email)) throw new ValidationException(ValidationErrors.INVALID_EMAIL,StatusCodes.BAD_REQUEST);
-        const user :IUserDto = await db_service.getUser(user_email);
+    async getUser(email : string) {
+        if (!validateEmail(email)) throw new ValidationException(VALDIATION_ERRORS.INVALID_EMAIL,STATUS_CODES.BAD_REQUEST);
+        const user :IUserDto = await db_service.getUser(email);
         if (user) return user;
-        throw new NotFoundException(ResouceNotFoundMapper(user_email,"INVALID_EMAIL"),StatusCodes.BAD_REQUEST);
+        throw new NotFoundException(`${email}${BAD_REQUEST_ERRORS.USER_FOUND}`,STATUS_CODES.BAD_REQUEST);
+    }
+
+    async verifyToken(token : string) {
+        const TOKEN_KEY = process.env.TOKEN_KEY;
+        if (!TOKEN_KEY) throw new GeneralException(BAD_REQUEST_ERRORS.TOKEN_ERROR,STATUS_CODES.GENERAL_ERROR);
+        const verifyOptions: VerifyOptions = {
+            algorithms: ['RS256'],
+        };
+        try {
+            const result = await verify(token,TOKEN_KEY,verifyOptions);
+            return result;
+        } catch (err) {
+            throw new GeneralException(BAD_REQUEST_ERRORS.TOKEN_ERROR,STATUS_CODES.BAD_REQUEST)
+        }
+    }
+    
+    async login(email : string , password : string){
+        validatePassword(password);
+        const user : IUserDto = await this.getUser(email);
+        const validPassword = await bcrypt.compare(password, user.password);
+        if (!validPassword) throw new ValidationException(`${VALDIATION_ERRORS.PASSWORD_DOESNT_MATCH}${user.email}`,STATUS_CODES.BAD_REQUEST);
+        const token = generateJwt(user.email,user.password)
+        if (!token) throw new GeneralException(BAD_REQUEST_ERRORS.TOKEN_ERROR,STATUS_CODES.BAD_REQUEST);
+        return token;
     }
 }
 

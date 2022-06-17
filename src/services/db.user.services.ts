@@ -17,7 +17,7 @@ export const getUser = async (email : string) : Promise<IUserDto> => {
     try {
         let param = [email];
         const sql_query = `SELECT * FROM users WHERE email = $1`;
-        const result = (await db.query(sql_query,param)).rows[0] as IUserDto;
+        const result = (await db.query(sql_query,param)).rows[0];
         return result;
     } catch (err) {
         throw new DbException("Database error occured",500);

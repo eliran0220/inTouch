@@ -1,13 +1,22 @@
 export interface IUser {
-    username : string,
+    email : string,
     password : string,
     first_name : string,
     last_name : string,
+};
+
+export interface ILogin {
     email : string,
+    password : string,
 };
 
 export interface IPost {
     title : string,
     created_at : string,
 };
+
+export type paramChecker = IUser | ILogin;
+
+export const MANDATORY_USER_FIELDS = ['password','email'];
+
 

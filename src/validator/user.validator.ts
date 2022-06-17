@@ -1,14 +1,26 @@
+import { ValidationException } from '../exceptions/validation.exception';
 import { ErrorAcumalator } from '../types/common.types';
-import {IUser} from '../types/request.types';
-import {REGEX,ValidationErrors} from '../utilities/constants.utilities';
-export const validateUser = (user : IUser) : string => {
+import {IUser, paramChecker} from '../types/request.types';
+import {REGEX,STATUS_CODES,VALDIATION_ERRORS,MANDATORY_FIELDS} from '../utilities/constants.utilities';
+
+export const validateUser = (user : IUser) : void => {
+    checkIfparamsEmpty(user);
     let errors : ErrorAcumalator = {};
-    const {username, password, first_name, last_name, email} = user;
-    if (!validateUsername(username)) errors['Invalid username'] = ValidationErrors.INVALID_USERNAME
-    if (!validateEmail(email)) errors['Invalid email'] = ValidationErrors.INVALID_EMAIL
-    if (!validatePassword(password)) errors['Invalid password'] = ValidationErrors.INVALID_PASSWORD
-    const output = JSON.stringify(errors);
-    return output;
+    const {password, first_name, last_name, email} = user;
+    if (!validateEmail(email)) errors['Invalid email'] = VALDIATION_ERRORS.INVALID_EMAIL
+    if (!validatePassword(password)) errors['Invalid password'] = VALDIATION_ERRORS.INVALID_PASSWORD
+    if (Object.keys(errors).length > 0) throw new ValidationException(JSON.stringify(errors),STATUS_CODES.BAD_REQUEST);
+    
+}
+
+export const checkIfparamsEmpty = (obj : paramChecker) : void  =>  {
+    let errors : ErrorAcumalator = {};
+    for (const key of MANDATORY_FIELDS){
+        if (obj[key] === undefined || obj[key] ==='') {
+            errors[key] = VALDIATION_ERRORS[`INVALID_${key.toUpperCase()}_EMPTY`];
+        }
+    }
+    if (Object.keys(errors).length > 0) throw new ValidationException(JSON.stringify(errors),STATUS_CODES.BAD_REQUEST);
 }
 
 export const validateEmail = (email : string) : boolean =>  {
@@ -18,10 +30,5 @@ export const validateEmail = (email : string) : boolean =>  {
 
 export const validatePassword = (password : string) : boolean => {
     if (!REGEX.valid_password.test(password)) return false;
-    return true;
-}
-
-export const validateUsername = (username : string) : boolean => {
-    if (!REGEX.valid_username.test(username)) return false;
     return true;
 }

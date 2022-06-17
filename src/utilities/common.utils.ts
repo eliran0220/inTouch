@@ -7,7 +7,10 @@ import * as utilities from '../utilities/common.utils';
 import { IResponse, ISuccessResponse } from '../types/response.types';
 import AsyncReqHandler from '../types/catcher.types';
 import bcrypt from 'bcrypt';
-import {GEN_SALT} from '../utilities/constants.utilities';
+import {GEN_SALT,STATUS_CODES,BAD_REQUEST_ERRORS} from '../utilities/constants.utilities';
+import { sign, SignOptions } from 'jsonwebtoken';
+import * as process from "process";
+import {GeneralException} from '../exceptions/general.exceptions';
 export const routes = [...user_routes,...posts_routes];
 
 export const controllersMapping = {
@@ -42,6 +45,24 @@ export const hashUserPassword = async (password : string) => {
         throw err;
     }
     return hashed_password;
+}
+
+export const generateJwt = (email : string, password : string) =>{
+    try {
+        const payload = {
+            email: email,
+            password: password,
+        };
+        const TOKEN_KEY = process.env.TOKEN_KEY;
+        const signInOptions: SignOptions = {
+            algorithm: 'HS256',
+            expiresIn: '1h'
+        };
+        if (TOKEN_KEY) return sign(payload,TOKEN_KEY,signInOptions)
+    } catch(err) {
+        throw new GeneralException(BAD_REQUEST_ERRORS.TOKEN_ERROR,STATUS_CODES.GENERAL_ERROR)
+    }
+
 }
 
                                 

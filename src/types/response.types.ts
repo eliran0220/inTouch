@@ -4,7 +4,7 @@ export interface IResponse {
 }
 
 export interface ISuccessResponse extends IResponse {
-    data: object;
+    data: any;
 }
 
 export interface IErrorResponse extends IResponse {

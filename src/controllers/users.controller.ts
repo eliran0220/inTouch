@@ -29,14 +29,19 @@ class UserController {
        res.status(response.status).json(response);
     }
 
-
-
     async deleteUser(req: Request, res: Response) {
         res.json({message:'User route delete request'})
     }
 
     async login(req: Request, res: Response) {
-        res.json({message:'User route login request'})
+        const {email, password} = req.body;
+        const token = await UserService.login(email,password);
+        const response : ISuccessResponse = {
+            status: 200,
+            message: 'User has been logged in succesfully!',
+            data: token
+        }
+        res.status(response.status).json(response);
     }
 }
 
