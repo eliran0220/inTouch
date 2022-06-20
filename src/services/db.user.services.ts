@@ -5,7 +5,7 @@ import { DbException } from '../exceptions/db.exception';
 export const createUser = async (user : IUserDb) : Promise<IUserDto> => {
     try {
         let params = Object.keys(user).map((key) => user[key])
-        const sql_query = `INSERT INTO users VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *`
+        const sql_query = `INSERT INTO users VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *`
         const result = (await db.query(sql_query,[...params])).rows[0] as IUserDto;
         return result;
     } catch (err) {
@@ -21,5 +21,16 @@ export const getUser = async (email : string) : Promise<IUserDto> => {
         return result;
     } catch (err) {
         throw new DbException("Database error occured",500);
+    }
+}
+
+export const saveUserLoginToken = async (user_id : string ,token : string) : Promise<void> => {
+    try {
+        let params = [user_id,token];
+        const sql_query = `INSERT INTO users_tokens VALUES ($1,$2) RETURNING *`;
+        const result = (await db.query(sql_query,params)).rows[0];
+    }
+    catch (err) {
+        throw err;
     }
 }

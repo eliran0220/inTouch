@@ -56,7 +56,7 @@ export const generateJwt = (email : string, password : string) =>{
         const TOKEN_KEY = process.env.TOKEN_KEY;
         const signInOptions: SignOptions = {
             algorithm: 'HS256',
-            expiresIn: '1h'
+            expiresIn: '5m'
         };
         if (TOKEN_KEY) return sign(payload,TOKEN_KEY,signInOptions)
     } catch(err) {

@@ -17,6 +17,4 @@ export interface IPost {
 
 export type paramChecker = IUser | ILogin;
 
-export const MANDATORY_USER_FIELDS = ['password','email'];
-
 

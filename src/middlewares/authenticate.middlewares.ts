@@ -19,7 +19,7 @@ const verifyToken = async (req : Request, res : Response, next : NextFunction) =
     try {
         const TOKEN_KEY = process.env.TOKEN_KEY;
         if (!TOKEN_KEY) throw new GeneralException(BAD_REQUEST_ERRORS.TOKEN_ERROR,STATUS_CODES.GENERAL_ERROR);
-        const result = await jwt.verify(token,TOKEN_KEY);
+        const result = await jwt.verify(token as string,TOKEN_KEY);
         next();
     } catch (err) {
         return res.status(401).send("Invalid Token");

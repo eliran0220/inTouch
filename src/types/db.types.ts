@@ -5,7 +5,6 @@ export interface IUserDb {
     last_name : string,
     email : string,
     created_at : string,
-    token : string
     is_deleted : number,
 }
 

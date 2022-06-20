@@ -16,6 +16,12 @@ export enum VALDIATION_ERRORS {
     PASSWORD_DOESNT_MATCH = "Password is incorrect for "
 }
 
+export enum SUCCESS_MESSAGES {
+    USER_CREATED = " has been created succesfully",
+    USER_LOGGED = " has been logged in succesfully",
+    GET_USER = " has been retrieved from db succesfully"
+}
+
 
 export enum BAD_REQUEST_ERRORS {
     USER_N0T_FOUND = " was not found",

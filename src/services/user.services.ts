@@ -28,11 +28,10 @@ class UserService {
             user_id : v4(),
             ...user,
             created_at : moment().format("DD/MM/YYYY"),
-            token,
             is_deleted : 0,
         };
         const created_user = await db_service.createUser(new_user);
-        created_user
+        await db_service.saveUserLoginToken(new_user.user_id,token);
         return created_user;
     }
     
@@ -40,7 +39,7 @@ class UserService {
         if (!validateEmail(email)) throw new ValidationException(VALDIATION_ERRORS.INVALID_EMAIL,STATUS_CODES.BAD_REQUEST);
         const user :IUserDto = await db_service.getUser(email);
         if (user) return user;
-        throw new NotFoundException(`${email}${BAD_REQUEST_ERRORS.USER_FOUND}`,STATUS_CODES.BAD_REQUEST);
+        throw new NotFoundException(`${email}${BAD_REQUEST_ERRORS.USER_N0T_FOUND}`,STATUS_CODES.BAD_REQUEST);
     }
 
     async verifyToken(token : string) {
@@ -59,10 +58,11 @@ class UserService {
     
     async login(email : string , password : string){
         validatePassword(password);
-        const user : IUserDto = await this.getUser(email);
+        const user : IUserDto = await this.getUser(email) as IUserDto;
         const validPassword = await bcrypt.compare(password, user.password);
         if (!validPassword) throw new ValidationException(`${VALDIATION_ERRORS.PASSWORD_DOESNT_MATCH}${user.email}`,STATUS_CODES.BAD_REQUEST);
         const token = generateJwt(user.email,user.password)
+        await db_service.saveUserLoginToken(user.user_id,token);
         if (!token) throw new GeneralException(BAD_REQUEST_ERRORS.TOKEN_ERROR,STATUS_CODES.BAD_REQUEST);
         return token;
     }

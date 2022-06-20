@@ -46,3 +46,6 @@ class App {
 
 const instance = new App();
 export default instance;
+
+
+//TODO - add db - user-token table

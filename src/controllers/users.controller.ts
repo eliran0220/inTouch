@@ -1,7 +1,10 @@
 import {Response, Request} from "express";
 import {IUser} from '../types/request.types';
+import {IUserDto} from '../types/dto.types';
+
 import UserService from '../services/user.services';
 import {IErrorResponse, ISuccessResponse } from "../types/response.types";
+import {SUCCESS_MESSAGES} from '../utilities/constants.utilities'; 
 class UserController {
     constructor() {
         console.log('Created instance of CommonController')
@@ -9,10 +12,10 @@ class UserController {
 
     async getUser(req: Request, res: Response) {
         const id = req.params.id;
-        const user = await UserService.getUser(id);
+        const user = await UserService.getUser(id) as IUserDto;
         const response : ISuccessResponse = {
             status:200,
-            message : 'User has been retrieved succesfully!',
+            message : `${user.email}${SUCCESS_MESSAGES.GET_USER}`,
             data : user
         };
         res.status(response.status).json(response);
@@ -20,10 +23,10 @@ class UserController {
     }
 
    async createUser(req: Request, res: Response) {
-        const created_user = await UserService.createUser(req.body as IUser);
+        const created_user = await UserService.createUser(req.body as IUser) as IUserDto;
         const response : ISuccessResponse = {
             status:200,
-            message : 'User has been created succesfully!',
+            message : `${created_user.email}${SUCCESS_MESSAGES.USER_CREATED}`,
             data : created_user
         };
        res.status(response.status).json(response);
@@ -38,7 +41,7 @@ class UserController {
         const token = await UserService.login(email,password);
         const response : ISuccessResponse = {
             status: 200,
-            message: 'User has been logged in succesfully!',
+            message: `${email}${SUCCESS_MESSAGES}`,
             data: token
         }
         res.status(response.status).json(response);
